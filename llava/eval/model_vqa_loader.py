@@ -111,7 +111,9 @@ def eval_model(args):
                 num_beams=args.num_beams,
                 max_new_tokens=args.max_new_tokens,
                 use_cache=True,
-                stopping_criteria=stopping_criteria,)
+                stopping_criteria=stopping_criteria,
+                pad_token_id=tokenizer.eos_token_id,
+                )
 
         outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
         outputs = outputs.strip()
