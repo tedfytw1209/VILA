@@ -8,7 +8,6 @@ import re
 from pycocoevalcap.bleu.bleu import Bleu
 from pycocoevalcap.meteor.meteor import Meteor
 from pycocoevalcap.rouge.rouge import Rouge
-from llava.eval.cider.cider import Cider
 
 NUM_SECONDS_TO_SLEEP = 0.5
 
@@ -50,8 +49,6 @@ def compute_NLG_scores(nlg_metrics: list[str], gen_sents_or_reports: list[str], 
         scorers["meteor"] = Meteor()
     if "rouge" in nlg_metrics:
         scorers["rouge"] = Rouge()  # this is actually the Rouge-L score, even if the class name only says Rouge
-    if "cider" in nlg_metrics:
-        scorers["cider"] = Cider()  # this is actually the Cider-D score, even if the class name only says Cider
 
     gen_sents_or_reports = convert_for_pycoco_scorer(gen_sents_or_reports)
     ref_sents_or_reports = convert_for_pycoco_scorer(ref_sents_or_reports)
@@ -108,7 +105,7 @@ if __name__ == '__main__':
         idx += 1
         print(idx)
     #
-    METRIC_NAMES = ["bleu","meteor","rouge","cider"]
+    METRIC_NAMES = ["bleu","meteor","rouge"]
     score_metric = compute_NLG_scores(METRIC_NAMES,ans_text_list,gt_test_list)
     print('Score Metric:')
     print(score_metric)
