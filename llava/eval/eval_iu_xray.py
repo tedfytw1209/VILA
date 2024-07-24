@@ -73,13 +73,11 @@ def compute_NLG_scores(nlg_metrics: list[str], gen_sents_or_reports: list[str], 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='IU X-ray evaluation.')
-    parser.add_argument('-q', '--question')
     parser.add_argument('-a', '--answer')
     parser.add_argument('-g', '--ground-truth')
     parser.add_argument('-o', '--output')
     args = parser.parse_args()
 
-    f_q = open(os.path.expanduser(args.question))
     f_ans = open(os.path.expanduser(args.answer))
     f_gt = open(os.path.expanduser(args.ground_truth))
 
@@ -88,11 +86,9 @@ if __name__ == '__main__':
     ans_text_list = []
     gt_test_list = []
     idx = 0
-    for ques_js, ans_js, gt_js in zip(f_q, f_ans, f_gt):
-        ques = json.loads(ques_js)
+    for ans_js, gt_js in zip(f_ans, f_gt):
         ans = json.loads(ans_js)
         gt_ans = json.loads(gt_js)
-        print('ques: ',ques)
         print('ans: ',ans)
         print('get ans: ',gt_ans)
         if gt_ans['text']:
