@@ -6,8 +6,9 @@ import os
 import re
 
 from pycocoevalcap.bleu.bleu import Bleu
-from pycocoevalcap.meteor.meteor import Meteor
+#from pycocoevalcap.meteor.meteor import Meteor #need impl
 from pycocoevalcap.rouge.rouge import Rouge
+#from llava.eval.cider.cider import Cider #need impl
 
 NUM_SECONDS_TO_SLEEP = 0.5
 
@@ -105,7 +106,7 @@ if __name__ == '__main__':
         idx += 1
         print(idx)
     #
-    METRIC_NAMES = ["bleu","meteor","rouge"]
+    METRIC_NAMES = ["bleu","meteor","rouge","cider"]
     score_metric = compute_NLG_scores(METRIC_NAMES,ans_text_list,gt_test_list)
     print('Score Metric:')
     print(score_metric)
