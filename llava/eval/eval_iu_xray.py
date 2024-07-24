@@ -8,7 +8,7 @@ import re
 from pycocoevalcap.bleu.bleu import Bleu
 from pycocoevalcap.meteor.meteor import Meteor
 from pycocoevalcap.rouge.rouge import Rouge
-from cider.cider import Cider
+from llava.eval.cider.cider import Cider
 
 NUM_SECONDS_TO_SLEEP = 0.5
 
