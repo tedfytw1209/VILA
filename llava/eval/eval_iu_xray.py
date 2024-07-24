@@ -45,8 +45,8 @@ def compute_NLG_scores(nlg_metrics: list[str], gen_sents_or_reports: list[str], 
     scorers = {}
     if "bleu" in nlg_metrics:
         scorers["bleu"] = Bleu(4)
-    if "meteor" in nlg_metrics:
-        scorers["meteor"] = Meteor()
+    #if "meteor" in nlg_metrics:
+    #    scorers["meteor"] = Meteor()
     if "rouge" in nlg_metrics:
         scorers["rouge"] = Rouge()  # this is actually the Rouge-L score, even if the class name only says Rouge
 
