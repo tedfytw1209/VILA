@@ -7,8 +7,9 @@ import re
 
 from pycocoevalcap.bleu.bleu import Bleu
 #from pycocoevalcap.meteor.meteor import Meteor #need impl
+import evaluate
 from pycocoevalcap.rouge.rouge import Rouge
-#from llava.eval.cider.cider import Cider #need impl
+from llava.eval.cider.cider import Cider #need impl
 
 NUM_SECONDS_TO_SLEEP = 0.5
 
@@ -46,11 +47,10 @@ def compute_NLG_scores(nlg_metrics: list[str], gen_sents_or_reports: list[str], 
     scorers = {}
     if "bleu" in nlg_metrics:
         scorers["bleu"] = Bleu(4)
-    #if "meteor" in nlg_metrics:
-    #    scorers["meteor"] = Meteor()
     if "rouge" in nlg_metrics:
         scorers["rouge"] = Rouge()  # this is actually the Rouge-L score, even if the class name only says Rouge
-
+    if 'cider' in nlg_metrics:
+        scorers['cider'] = Cider()
     gen_sents_or_reports = convert_for_pycoco_scorer(gen_sents_or_reports)
     ref_sents_or_reports = convert_for_pycoco_scorer(ref_sents_or_reports)
 
@@ -65,6 +65,13 @@ def compute_NLG_scores(nlg_metrics: list[str], gen_sents_or_reports: list[str], 
             nlg_scores["bleu_4"] = score[3]
         else:
             nlg_scores[metric_name] = score
+    #other implements
+    if "meteor" in nlg_metrics:
+        meteor = evaluate.load('meteor')
+        meteor_sum = 0
+        for gen_sent, ref_sent in zip(gen_sents_or_reports,ref_sents_or_reports):
+            meteor_sum += meteor.compute(predictions=gen_sent, references=ref_sent)['meteor']
+        nlg_scores['meteor'] = meteor_sum / len(gen_sents_or_reports)
 
     return nlg_scores
 
