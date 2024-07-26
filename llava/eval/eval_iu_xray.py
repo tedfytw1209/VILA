@@ -69,9 +69,8 @@ def compute_NLG_scores(nlg_metrics: list[str], gen_sents_or_reports: list[str], 
     if "meteor" in nlg_metrics:
         meteor = evaluate.load('meteor')
         meteor_sum = 0
-        for gen_sent, ref_sent in zip(gen_sents_or_reports,ref_sents_or_reports):
-            meteor_sum += meteor.compute(predictions=gen_sent, references=ref_sent)['meteor']
-        nlg_scores['meteor'] = meteor_sum / len(gen_sents_or_reports)
+        meteor_sum = meteor.compute(predictions=gen_sents_or_reports, references=ref_sents_or_reports)['meteor']
+        nlg_scores['meteor'] = meteor_sum
 
     return nlg_scores
 
