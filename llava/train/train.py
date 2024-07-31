@@ -415,10 +415,7 @@ def train():
 
     # Add a training step_end callback to check whether to autosuspend.
     callbacks = [AutoResumeCallback()]
-    #!!tmp force device='cuda'
-    training_args.place_model_on_device = True
-    training_args.device = 'cuda'
-    print('--------------------')
+
     trainer = LLaVATrainer(
         model=model, tokenizer=tokenizer, args=training_args,
         callbacks=callbacks, **data_module
