@@ -181,6 +181,43 @@ class LazySupervisedDataset(Dataset):
             frames_loaded = 0
 
         return pil_imgs, frames_loaded
+    
+    @staticmethod
+    def _load_nii(nii_path, num_video_frames, center_image=None):
+        import nibabel as nib
+        try:
+            image_np = nib.load(nii_path).get_fdata() #origin: H,W,D
+        except Exception as e:
+            print(f"[DEBUG] Error processing {nii_path}: {e}")
+            image_np = np.zeros((512,512,8),dtype=np.float32)
+        # toTensor = transforms.ToTensor()
+        image = np.transpose(image_np,(2,0,1)) #to D,H,W
+        depth = image.shape[0]
+        if center_image==None or center_image<=0:
+            if num_video_frames < depth:
+                step = depth // num_video_frames
+                image = image[::step]
+                step_ids = [i for i in range(0, depth, step)]
+            else:
+                image = image
+                step_ids = [i for i in range(depth)]
+        else:
+            select_img = depth - center_image #handle nii reverse problem
+            if select_img < 0:
+                image = image[:min(num_video_frames,depth)]
+                step_ids = [i for i in range(num_video_frames)]
+            else:
+                half_num_frames = int(np.random.uniform(0, num_video_frames))
+                start, end = max(0, select_img-half_num_frames), min(depth, select_img+(num_video_frames-half_num_frames)+1)
+                image = image[start:end]
+                step_ids = [i for i in range(start,end)]
+            step_ids = [depth-i for i in step_ids] #reverse back to original order
+        pil_imgs = [Image.fromarray(img).convert('RGB') for img in image]
+        frames_loaded = len(pil_imgs)
+        #print(frames_loaded,step_ids)
+        assert frames_loaded == len(step_ids)
+
+        return pil_imgs, step_ids, frames_loaded
 
     def __getitem__(self, i) -> Dict[str, torch.Tensor]:
         sources = self.list_data_dict[i]
@@ -242,6 +279,24 @@ class LazySupervisedDataset(Dataset):
                     image = process_image(image_file, self.data_args, self.image_folder)
                     all_images.append(image)
                 processed_images = torch.stack(all_images)
+        elif "nii" in sources[0]:
+            nii_file = os.path.join(self.image_folder,sources[0]["nii"])
+            num_video_frames = self.data_args.num_video_frames if hasattr(self.data_args, "num_video_frames") else 64
+            center_image = sources[0].get("center_image",None)
+            all_images, step_ids, num_frames_loaded_successfully = self._load_nii(nii_file, num_video_frames,center_image=center_image)
+            image_tensor = torch.stack([process_image(image, self.data_args, None) for image in all_images])
+            #print('image_tensor: ',image_tensor.shape) #tmp
+            #add image tags and repack
+            question = sources[0]["conversations"][0]["value"]
+            answer = sources[0]["conversations"][1]["value"]
+            question = question.replace("<image>\n", "").replace("\n<image>", "").replace("<image>", "")
+            question = question.replace("<video>\n", "").replace("\n<video>", "").replace("<video>", "")
+            images_q = ''.join(['%d : <image>\n'%(step_ids[i]) for i in range(num_frames_loaded_successfully)])
+            question = images_q + question
+            sources[0]["conversations"][0]["value"] = question
+            sources[0]["conversations"][1]["value"] = answer
+            #print('conversation: ',conversation) #tmp
+            sources = preprocess_multimodal(copy.deepcopy([e["conversations"] for e in sources]), self.data_args)
         elif ("video" in sources[0]) or ("video_id" in sources[0]):
             # num_video_frames = self.data_args.num_video_frames
             if "video_path" in sources[0]:

@@ -53,6 +53,22 @@ def add_dataset(dataset):
 
 
 def register_datasets_mixtures():
-    pass
+    #LDCT 3D data in torch type
+    ldct2_notes_nii = Dataset(
+        dataset_name="ldct2_notes_nii",
+        dataset_type="torch",
+        data_path="/blue/chenaokun1990/tienyuchang/VILA/playground/data/eval/LungCancer_3DCT/Report_notes_train_nii.jsonl",
+        image_path="/blue/chenaokun1990/tienyuchang/CT_nii/",
+        description="New LDCT2 3D data in torch type, 6k text",
+    )
+    add_dataset(ldct2_notes_nii)
+    ldct2_nodules_nii = Dataset(
+        dataset_name="ldct2_nodules_nii",
+        dataset_type="torch",
+        data_path="/blue/chenaokun1990/tienyuchang/VILA/playground/data/eval/LungCancer_3DCT/Report_nodules_train_nii.jsonl",
+        image_path="/blue/chenaokun1990/tienyuchang/CT_nii/",
+        description="New LDCT2 3D data in torch type, 6k text",
+    )
+    add_dataset(ldct2_nodules_nii)
 
 
