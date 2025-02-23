@@ -35,10 +35,10 @@ torchrun --nnodes=$n_node --nproc_per_node=4 --master_port=25001 \
     --mm_use_im_patch_token False \
     --image_aspect_ratio dynamic \
     --bf16 True \
-    --seq_parallel_size 14 \
+    --seq_parallel_size 4 \
     --output_dir $OUTPUT \
     --num_train_epochs 6 \
-    --per_device_train_batch_size 2 \
+    --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps $gradient_accumulation_steps \
     --evaluation_strategy "no" \
