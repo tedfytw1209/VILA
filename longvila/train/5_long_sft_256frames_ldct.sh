@@ -15,7 +15,7 @@ EXTENDED_64k_PATH=$1
 OUTPUT=$2
 DATA_FILE=$3
 
-torchrun --nnodes=$n_node --nproc_per_node=4 --master_port=25001 \
+TOKENIZERS_PARALLELISM=true torchrun --nnodes=$n_node --nproc_per_node=4 --master_port=25001 \
     --master_addr $MASTER_ADDR --node_rank=$CURRENT_RANK \
     llava/train/train_hybrid.py \
     --longvila_sampler True \
