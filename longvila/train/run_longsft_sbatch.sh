@@ -17,4 +17,4 @@ date;hostname;pwd
 module load conda
 conda activate nvila
 
-bash longvila/train/5_long_sft_256frames.sh $STAGE3_PATH $OUTPUT $DATA_FILE
+bash longvila/train/5_long_sft_256frames_ldct.sh $STAGE3_PATH $OUTPUT $DATA_FILE
