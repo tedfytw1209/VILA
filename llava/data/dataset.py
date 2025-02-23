@@ -1327,6 +1327,16 @@ class DataCollatorForSupervisedDatasetSeqParallel:
     sp_rank: int
     ring_degree: int
     ring_type: str
+    
+    #Tien Yu: Add init function
+    def __init__(self, tokenizer, data_args, training_args, sp_degree, sp_rank, ring_degree, ring_type):
+        self.tokenizer = tokenizer
+        self.data_args = data_args 
+        self.training_args = training_args
+        self.sp_degree = sp_degree
+        self.sp_rank = sp_rank
+        self.ring_degree = ring_degree
+        self.ring_type = ring_type
 
     def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
         input_ids, labels, images = [], [], []
