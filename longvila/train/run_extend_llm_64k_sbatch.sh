@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=32
 #SBATCH --mem-per-cpu=32gb
 #SBATCH --partition=gpu
-#SBATCH --gpus=a100:8
+#SBATCH --gpus=a100:4
 #SBATCH --time=72:00:00
 #SBATCH --output=%x.%j.out
 

@@ -26,26 +26,26 @@ TOKENIZERS_PARALLELISM=true torchrun --nnodes=$n_node --nproc_per_node=4 --maste
     --vision_tower google/siglip-so400m-patch14-384 \
     --mm_vision_select_feature cls_patch \
     --mm_projector mlp_downsample \
-    --num_video_frames 256 \
+    --num_video_frames 128 \
     --tune_vision_tower True \
     --tune_mm_projector True \
     --tune_language_model True \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
-    --image_aspect_ratio dynamic \
+    --image_aspect_ratio resize \
     --bf16 True \
-    --seq_parallel_size 4 \
+    --seq_parallel_size 2 \
     --output_dir $OUTPUT \
     --num_train_epochs 6 \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps $gradient_accumulation_steps \
     --evaluation_strategy "no" \
-    --save_strategy "steps" \
+    --save_strategy "no" \
     --save_steps 20 \
     --fps 2.0 \
-    --save_total_limit 2 \
+    --save_total_limit 1 \
     --learning_rate 2e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \

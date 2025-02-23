@@ -18,7 +18,7 @@ rope_theta=15300000
 
 mkdir -p $OUTPUT
 
-torchrun --nnodes=$n_node --nproc_per_node=8 --master_port=25001 \
+torchrun --nnodes=$n_node --nproc_per_node=4 --master_port=25001 \
         --master_addr $MASTER_ADDR --node_rank=$CURRENT_RANK \
         llava/train/train_llm_to_long.py  \
         --model_name_or_path $STAGE3_PATH/llm \
