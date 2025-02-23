@@ -280,6 +280,11 @@ class LazySupervisedDataset(Dataset):
                     all_images.append(image)
                 processed_images = torch.stack(all_images)
         elif "nii" in sources[0]:
+            #image files read
+            nii_file = os.path.join(self.image_folder,sources[0]["nii"])
+            num_video_frames = self.data_args.num_video_frames if hasattr(self.data_args, "num_video_frames") else 64
+            center_image = sources[0].get("center_image",None)
+            all_images, step_ids, num_frames_loaded_successfully = self._load_nii(nii_file, num_video_frames,center_image=center_image)
             #add image tags and repack
             question = sources[0]["conversations"][0]["value"]
             answer = sources[0]["conversations"][1]["value"]
@@ -290,11 +295,7 @@ class LazySupervisedDataset(Dataset):
             sources[0]["conversations"][0]["value"] = question
             sources[0]["conversations"][1]["value"] = answer
             sources = preprocess_multimodal(copy.deepcopy([e["conversations"] for e in sources]), self.data_args)
-            #image files read
-            nii_file = os.path.join(self.image_folder,sources[0]["nii"])
-            num_video_frames = self.data_args.num_video_frames if hasattr(self.data_args, "num_video_frames") else 64
-            center_image = sources[0].get("center_image",None)
-            all_images, step_ids, num_frames_loaded_successfully = self._load_nii(nii_file, num_video_frames,center_image=center_image)
+            #process images
             if enable_dynamic_res_s2:
                 processed_images, block_sizes = dynamic_s2_process_images_and_prompt(
                     all_images, sources[0][0]["value"], self.data_args, self.image_folder
