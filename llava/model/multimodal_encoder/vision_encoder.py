@@ -1,14 +1,32 @@
+# Copyright 2024 NVIDIA CORPORATION & AFFILIATES
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # This file is modified from https://github.com/haotian-liu/LLaVA/
 
 from abc import abstractmethod
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from accelerate.hooks import add_hook_to_module
+from einops import rearrange
+from s2wrapper import forward as multiscale_forward
 from transformers import AutoConfig, PreTrainedModel
 from transformers.image_processing_utils import BaseImageProcessor
 from transformers.integrations.deepspeed import is_deepspeed_zero3_enabled
-from s2wrapper import forward as multiscale_forward
 
 
 class VisionTower(nn.Module):
@@ -42,7 +60,9 @@ class VisionTower(nn.Module):
     ):
         if resolution in [model.config.image_size, -1]:
             return
-        print(f"Resizing vision model's position embeddings to support higher vision resolution: from {model.config.image_size} to {resolution} ...")
+        print(
+            f"Resizing vision model's position embeddings to support higher vision resolution: from {model.config.image_size} to {resolution} ..."
+        )
         embeddings = model.vision_model.embeddings
         patch_size = embeddings.patch_size
         num_new_tokens = int((resolution // patch_size) ** 2)
@@ -161,34 +181,71 @@ class VisionTowerS2(VisionTower):
     def __init__(self, vision_tower, args, delay_load=False):
         super().__init__(vision_tower, args, delay_load)
 
-        self.scales = list(map(int, args.s2_scales.split(',')))
+        self.scales = list(map(int, args.s2_scales.split(",")))
         self.scales.sort()
         self.max_split_size = args.s2_max_split_size
+        self.resize_output_to_scale_idx = getattr(args, "s2_resize_output_to_scale_idx", 0)
 
-    @torch.no_grad()
     def forward_feature(self, images):
-        image_forward_outs = self.vision_tower(images.to(device=self.device, dtype=self.dtype), output_hidden_states=True)
+        image_forward_outs = self.vision_tower(
+            images.to(device=self.device, dtype=self.dtype), output_hidden_states=True
+        )
         image_features = self.feature_select(image_forward_outs).to(images.dtype)
         return image_features
 
-    @torch.no_grad()
     def forward(self, images):
         if type(images) is list:
             image_features = []
             for image in images:
-                image_feature = multiscale_forward(self.forward_feature,
-                                                   image.unsqueeze(0),
-                                                   img_sizes=self.scales,
-                                                   max_split_size=self.max_split_size)
+                image_feature = multiscale_forward(
+                    self.forward_feature,
+                    image.unsqueeze(0),
+                    img_sizes=self.scales,
+                    max_split_size=self.max_split_size,
+                    resize_output_to_idx=self.resize_output_to_scale_idx,
+                )
                 image_features.append(image_feature)
         else:
-            image_features = multiscale_forward(self.forward_feature,
-                                                images,
-                                                img_sizes=self.scales,
-                                                max_split_size=self.max_split_size)
+            image_features = multiscale_forward(
+                self.forward_feature,
+                images,
+                img_sizes=self.scales,
+                max_split_size=self.max_split_size,
+                resize_output_to_idx=self.resize_output_to_scale_idx,
+            )
 
         return image_features
 
     @property
     def hidden_size(self):
         return self.config.hidden_size * len(self.scales)
+
+
+class VisionTowerDynamicS2(VisionTower):
+    def __init__(self, vision_tower, args, delay_load=False):
+        super().__init__(vision_tower, args, delay_load)
+
+        self.scales = list(map(int, args.s2_scales.split(",")))
+        self.scales.sort()
+        self.max_split_size = args.s2_max_split_size
+        self.resize_output_to_scale_idx = getattr(args, "s2_resize_output_to_scale_idx", 0)
+
+    def forward_feature(self, images):
+        image_forward_outs = self.vision_tower(
+            images.to(device=self.device, dtype=self.dtype), output_hidden_states=True
+        )
+        image_features = self.feature_select(image_forward_outs).to(images.dtype)
+        return image_features
+
+    def forward(self, images):
+        assert type(images) is not list
+
+        image_features = self.forward_feature(images)
+
+        return image_features
+
+    @property
+    def hidden_size(self):
+        return self.config.hidden_size * len(self.scales)
+
+

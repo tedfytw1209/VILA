@@ -1,10 +1,10 @@
 import os
 import re
 
-from .utilities import *
-
 # OpenAI
 import openai
+
+from .utilities import *
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 # print(openai.api_key)
@@ -79,3 +79,5 @@ def extract_answer(response, problem, quick_extract=False):
         print(f"Error in extracting answer for {pid}")
 
     return ""
+
+

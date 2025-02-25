@@ -1,10 +1,10 @@
 import re
+import sys
+
 import pandas as pd
 
 # !pip install python-Levenshtein
 from Levenshtein import distance
-
-import sys
 
 sys.path.append("../")
 from .utilities import *
@@ -20,9 +20,7 @@ def get_most_similar(prediction, choices):
     # return min(choices, key=lambda choice: distance(prediction, choice))
 
 
-def normalize_extracted_answer(
-    extraction, choices, question_type, answer_type, precision
-):
+def normalize_extracted_answer(extraction, choices, question_type, answer_type, precision):
     """
     Normalize the extracted answer to match the answer type
     """
@@ -94,11 +92,11 @@ def get_acc_with_contion(res_pd, key, value):
         total_pd = res_pd[res_pd[key] == value]
 
     correct_pd = total_pd[total_pd["true_false"] == True]
-    acc = "{:.2f}".format(len(correct_pd) / len(total_pd) * 100)
+    acc = f"{len(correct_pd) / len(total_pd) * 100:.2f}"
     return len(correct_pd), len(total_pd), acc
 
 
-def simple_calculate_score(results: dict, scores_file: str):
+def simple_calculate_score(results: dict):
     full_pids = list(results.keys())
     print("Number of testing problems:", len(full_pids))
 
@@ -117,9 +115,7 @@ def simple_calculate_score(results: dict, scores_file: str):
         answer = problem["answer"]
 
         # normalize the extracted answer to match the answer type
-        prediction = normalize_extracted_answer(
-            extraction, choices, question_type, answer_type, precision
-        )
+        prediction = normalize_extracted_answer(extraction, choices, question_type, answer_type, precision)
 
         # verify the prediction is true or false
         true_false = safe_equal(prediction, answer)
@@ -133,7 +129,7 @@ def simple_calculate_score(results: dict, scores_file: str):
     for pid in full_pids:
         if results[pid]["true_false"]:
             correct += 1
-    accuracy = str(round(correct / total * 100, 2))
+    accuracy = correct / total
     print(f"\nCorrect: {correct}, Total: {total}, Accuracy: {accuracy}%")
 
     scores = {"average": {"accuracy": accuracy, "correct": correct, "total": total}}
@@ -197,8 +193,6 @@ def simple_calculate_score(results: dict, scores_file: str):
                 reverse=True,
             )
         )
+    return scores
 
-    # save the scores
-    print(f"\nSaving {scores_file}...")
-    save_json(scores, scores_file)
-    print("\nDone!")
+

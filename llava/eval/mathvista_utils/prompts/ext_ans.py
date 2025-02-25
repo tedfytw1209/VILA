@@ -1,5 +1,3 @@
-
-
 # pids = 852,  104,  824,  506,  540
 
 demo_prompt = """
@@ -40,3 +38,5 @@ Model response: The correct answer is (B) 8/11.
 
 Extracted answer: B
 """
+
+
