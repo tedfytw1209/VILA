@@ -295,7 +295,7 @@ class LazySupervisedDataset(Dataset):
             sources[0]["conversations"][0]["value"] = question
             sources[0]["conversations"][1]["value"] = answer
             #tmp visualize
-            print("conversations:",sources[0]["conversations"])
+            #print("conversations:",sources[0]["conversations"])
             sources = preprocess_multimodal(copy.deepcopy([e["conversations"] for e in sources]), self.data_args)
             #process images
             if enable_dynamic_res_s2:
@@ -308,7 +308,7 @@ class LazySupervisedDataset(Dataset):
                 )
             else:
                 processed_images = torch.stack([process_image(image, self.data_args, None) for image in all_images])
-            print('processed_images.shape:',processed_images.shape)
+            #print('processed_images.shape:',processed_images.shape)
             
         elif ("video" in sources[0]) or ("video_id" in sources[0]):
             # num_video_frames = self.data_args.num_video_frames
