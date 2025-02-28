@@ -40,6 +40,7 @@ class BasicImageEncoder(BaseEncoder):
 
     def forward(self, images: List[torch.Tensor], config: Dict[str, Any]) -> List[torch.Tensor]:
         images = torch.stack(images, dim=0)
+        print('images shape:', images.shape) #DEBUG
         features = self.parent.encode_images(images, block_sizes=config.get("block_sizes"))
         process_features = partial(
             self._process_features,
