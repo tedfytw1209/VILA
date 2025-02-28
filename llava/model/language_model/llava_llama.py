@@ -113,7 +113,7 @@ class LlavaLlamaModel(LlavaMetaModel, LlavaMetaForCausalLM, PreTrainedModel):
             if media is not None:
                 raise ValueError("Both 'media' and 'images' are provided. Please provide only one.")
             logger.warning("The 'images' argument is deprecated. Please use 'media' instead.")
-            media = {"image": [images]} # tmp
+            media = {"image": [image for image in images]} # tmp
 
         if media_config is None:
             media_config = defaultdict(dict)
