@@ -10,7 +10,7 @@ echo "MASTER_ADDR="$MASTER_ADDR
 echo "JobID: $SLURM_JOB_ID | Full list: $worker_list"
 
 n_node=$SLURM_JOB_NUM_NODES
-gradient_accumulation_steps=$((128 / n_node))
+gradient_accumulation_steps=$((16 / n_node))
 EXTENDED_64k_PATH=$1
 OUTPUT=$2
 DATA_FILE=$3
