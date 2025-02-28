@@ -26,7 +26,7 @@ TOKENIZERS_PARALLELISM=true torchrun --nnodes=$n_node --nproc_per_node=4 --maste
     --vision_tower google/siglip-so400m-patch14-384 \
     --mm_vision_select_feature cls_patch \
     --mm_projector mlp_downsample \
-    --num_video_frames 128 \
+    --num_video_frames 256 \
     --tune_vision_tower True \
     --tune_mm_projector True \
     --tune_language_model True \
