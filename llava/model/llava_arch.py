@@ -469,8 +469,10 @@ class LlavaMetaForCausalLM(ABC):
         media_config: Dict[str, Dict[str, Any]],
     ) -> Dict[str, List[torch.Tensor]]:
         embeds = defaultdict(deque)
-        print("media", media) # DEBUG
+        print("media keys", media.keys()) # DEBUG
         for name in media:
+            print('media shape:',media[name].shape) # DEBUG
+            print('media_mean:',media[name].mean()) # DEBUG
             if self.training:
                 # Gather metainfo of media objects from all ranks
                 info = [{"shape": tensor.shape, "dtype": tensor.dtype} for tensor in media.get(name, [])]
