@@ -481,11 +481,11 @@ class LlavaMetaForCausalLM(ABC):
                     continue
 
                 # Create a dummy tensor to ensure the encoder is called, otherwise the training will hang.
-                if media[name] == None: #TODO: check if this is correct
+                if media[name] == []: #TODO: check if this is correct
                     dummy = torch.zeros(infos[0]["shape"], dtype=infos[0]["dtype"], device=self.device)
                     embeds["dummy"].extend(self.encoders[name]([dummy], media_config[name]))
                     continue
-            embeds[name] = deque(self.encoders[name](media[name], media_config[name]))
+            embeds[name] = deque(self.encoders[name](media[name][0], media_config[name]))
         return embeds
 
     def __truncate_sequence(
