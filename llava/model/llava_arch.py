@@ -485,7 +485,7 @@ class LlavaMetaForCausalLM(ABC):
                     dummy = torch.zeros(infos[0]["shape"], dtype=infos[0]["dtype"], device=self.device)
                     embeds["dummy"].extend(self.encoders[name]([dummy], media_config[name]))
                     continue
-            embeds[name] = deque(self.encoders[name](media[name][0], media_config[name]))
+            embeds[name] = deque(self.encoders[name](media[name], media_config[name]))
         return embeds
 
     def __truncate_sequence(
