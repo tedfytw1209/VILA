@@ -54,7 +54,6 @@ def add_dataset(dataset):
 
 def register_datasets_mixtures():
     #LDCT 3D data in torch typ, change to new dataset ways
-    '''
     ldct2_notes_nii = Dataset(
         dataset_name="ldct2_notes_nii",
         dataset_type="torch",
@@ -71,6 +70,5 @@ def register_datasets_mixtures():
         description="New LDCT2 3D data in torch type, 6k text",
     )
     add_dataset(ldct2_nodules_nii)
-    '''
 
 
