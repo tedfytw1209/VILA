@@ -471,8 +471,8 @@ class LlavaMetaForCausalLM(ABC):
         embeds = defaultdict(deque)
         print("media keys", media.keys()) # DEBUG
         for name in media:
-            print('media shape:',media[name].shape) # DEBUG
-            print('media_mean:',media[name].mean()) # DEBUG
+            if not isinstance(media[name],List):
+                media[name] = [media[name]]
             if self.training:
                 # Gather metainfo of media objects from all ranks
                 info = [{"shape": tensor.shape, "dtype": tensor.dtype} for tensor in media.get(name, [])]

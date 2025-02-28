@@ -395,7 +395,7 @@ class LazySupervisedDataset(Dataset):
             if enable_dynamic_res_s2:
                 data_dict["block_sizes"] = block_sizes
         elif "nii" in self.list_data_dict[i]:
-            data_dict["image"] = [processed_images] #for debug
+            data_dict["image"] = processed_images #for debug
             if enable_dynamic_res_s2:
                 data_dict["block_sizes"] = block_sizes
         elif ("video" in self.list_data_dict[i]) or ("video_id" in self.list_data_dict[i]):
