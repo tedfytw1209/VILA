@@ -471,8 +471,6 @@ class LlavaMetaForCausalLM(ABC):
         embeds = defaultdict(deque)
         print("media keys", media.keys()) # DEBUG
         for name in media:
-            if not isinstance(media[name],List):
-                media[name] = [media[name]]
             if self.training:
                 # Gather metainfo of media objects from all ranks
                 info = [{"shape": tensor.shape, "dtype": tensor.dtype} for tensor in media.get(name, [])]
@@ -483,7 +481,7 @@ class LlavaMetaForCausalLM(ABC):
                     continue
 
                 # Create a dummy tensor to ensure the encoder is called, otherwise the training will hang.
-                if not media.get(name):
+                if media[name] == None: #TODO: check if this is correct
                     dummy = torch.zeros(infos[0]["shape"], dtype=infos[0]["dtype"], device=self.device)
                     embeds["dummy"].extend(self.encoders[name]([dummy], media_config[name]))
                     continue
