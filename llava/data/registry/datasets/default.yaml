@@ -6,8 +6,8 @@ dummy:
 ldct2_notes_nii:
     _target_: llava.data.LazySupervisedDataset
     data_path: /blue/chenaokun1990/tienyuchang/VILA/playground/data/eval/LungCancer_3DCT/Report_notes_train_nii.jsonl
-    image_path: /blue/chenaokun1990/tienyuchang/CT_nii/
+    image_folder: /blue/chenaokun1990/tienyuchang/CT_nii/
 ldct2_nodules_nii:
     _target_: llava.data.LazySupervisedDataset
     data_path: /blue/chenaokun1990/tienyuchang/VILA/playground/data/eval/LungCancer_3DCT/Report_nodules_train_nii.jsonl
-    image_path: /blue/chenaokun1990/tienyuchang/CT_nii/
+    image_folder: /blue/chenaokun1990/tienyuchang/CT_nii/
