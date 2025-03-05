@@ -35,7 +35,6 @@ TOKENIZERS_PARALLELISM=true torchrun --nnodes=$n_node --nproc_per_node=4 --maste
     --mm_use_im_patch_token False \
     --image_aspect_ratio resize \
     --bf16 True \
-    --seq_parallel_size -1 \
     --output_dir $OUTPUT \
     --num_train_epochs 6 \
     --per_device_train_batch_size 1 \
