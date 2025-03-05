@@ -250,7 +250,11 @@ def get_ring_sp_rank():
 
 def get_ring_sp_pg():
     """Get the RingAttn sequence parallel process group."""
-    return PROCESS_GROUP_MANAGER.ring_pg
+    #TienYu: 03/04/2025 tmp fix
+    if PROCESS_GROUP_MANAGER is None:
+        return None
+    else:
+        return PROCESS_GROUP_MANAGER.ring_pg
 
 
 def get_ring_type():
